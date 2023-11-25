@@ -8,6 +8,7 @@ public class OrientationMatcing : MonoBehaviour
     public GameObject TargetObject;
     public Text textUI;
     public float kakudo;
+    private Vector3 localNormal = new Vector3(0, 0, 1);
 
     private double lastvibratetime = 0f;
     Gyroscope m_Gyro;
@@ -16,6 +17,7 @@ public class OrientationMatcing : MonoBehaviour
     {
         m_Gyro = Input.gyro;
         m_Gyro.enabled = true;
+
 
     }
 
@@ -39,7 +41,17 @@ public class OrientationMatcing : MonoBehaviour
         newQ.eulerAngles.z);
         // Debug.Log("オイラー:" + newQ.eulerAngles.x + "y:" + deviceRotation.eulerAngles.y + "z:" + deviceRotation.eulerAngles.z);
         var targetTransform = TargetObject.GetComponent<Transform>();
-        kakudo = Quaternion.Dot(newQ, targetTransform.rotation);
+
+        Vector3 worldNormal1 = transform.TransformDirection(localNormal);
+        Vector3 worldNormal2 = targetTransform.TransformDirection(localNormal);
+        float cosineSimilarity = Vector3.Dot(worldNormal1.normalized, worldNormal2.normalized);
+
+        Debug.Log(cosineSimilarity);
+
+
+
+
+        kakudo = cosineSimilarity;
         Debug.Log("内積" + kakudo);
 
         if (0.95f < kakudo)
